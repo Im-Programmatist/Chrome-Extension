@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Popup</title>
+</head>
+
+<body>
+    <h1>Hello World</h1>
+
+    <p onmouseup="getSelectedText(); alert(txt)">
+
+    </p>
+    <script>
+        function getSelectedText() {
+            if (window.getSelection) {
+                txt = window.getSelection();
+            } else if (window.document.getSelection) {
+                txt = window.document.getSelection();
+            } else if (window.document.selection) {
+                txt = window.document.selection.createRange().text;
+            }
+            console.log('txt', txt);
+            return txt;
+        }
+
+        $(document).ready(function () {
+            console.log("doc ready");
+            selectedTextPaste();
+        });
+
+        function selectedTextPaste() {
+            chrome.tabs.getSelected(null, function (tab) {
+                chrome.tabs.sendRequest(tab.id, { method: "getSelection" },
+                    function (response) {
+                        // if no selected text, paste in the url
+                        var text;
+                        if (response.data == "") {
+                            text = tab.url;
+                        } else {
+                            text = response.data;
+                        }
+                        // $('#selected_text').text(text);
+                        alert("selection = " + text);
+                    });
+            });
+        };
+    </script>
+</body>
+
+</html>
